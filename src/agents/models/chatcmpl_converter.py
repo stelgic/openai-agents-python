@@ -157,6 +157,9 @@ class Converter:
         if message.tool_calls:
             for tool_call in message.tool_calls:
                 if tool_call.type == "function":
+                    extra_content = ""
+                    if hasattr(tool_call, "extra_content"):
+                        extra_content = tool_call.extra_content
                     items.append(
                         ResponseFunctionToolCall(
                             id=FAKE_RESPONSES_ID,
@@ -164,7 +167,7 @@ class Converter:
                             arguments=tool_call.function.arguments,
                             name=tool_call.function.name,
                             type="function_call",
-                            extra_content=tool_call.extra_content,
+                            extra_content=extra_content,
                         )
                     )
                 elif tool_call.type == "custom":
@@ -545,7 +548,7 @@ class Converter:
                         "name": func_call["name"],
                         "arguments": arguments,
                     },
-                    extra_content=func_call["extra_content"]
+                    extra_content=func_call["extra_content"] if "extra_content" in func_call else ""
                 )
                 tool_calls.append(new_tool_call)
                 asst["tool_calls"] = tool_calls
