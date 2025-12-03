@@ -172,10 +172,6 @@ class Converter:
                     )
                 elif tool_call.type == "custom":
                     pass
-        if hasattr(message, "extra_content") and message.extra_content:
-            items.append(
-                ResponseOutputExtraContent(extra_content=message.extra_content, type="extra_content")
-            )
 
         return items
 
