@@ -675,6 +675,9 @@ class RunImpl:
                     "call_id": output.call_id,
                     "operation": parsed_operation,
                 }
+
+                if hasattr(output, "extra_content") and output.extra_content:
+                    pseudo_call["extra_content"] = output.extra_content
                 
                 items.append(ToolCallItem(raw_item=cast(Any, pseudo_call), agent=agent))
                 if apply_patch_tool:
