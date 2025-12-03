@@ -39,6 +39,8 @@ from openai.types.responses import (
     ResponseOutputText,
     ResponseReasoningItem,
     ResponseReasoningItemParam,
+    ResponseOutputExtraContent,
+    ResponseOutputExtraContentParam,
 )
 from openai.types.responses.response_input_param import FunctionCallOutput, ItemReference, Message
 from openai.types.responses.response_reasoning_item import Content, Summary
@@ -162,10 +164,15 @@ class Converter:
                             arguments=tool_call.function.arguments,
                             name=tool_call.function.name,
                             type="function_call",
+                            extra_content=tool_call.extra_content,
                         )
                     )
                 elif tool_call.type == "custom":
                     pass
+        if hasattr(message, "extra_content") and message.extra_content:
+            items.append(
+                ResponseOutputExtraContent(extra_content=message.extra_content, type="extra_content")
+            )
 
         return items
 
@@ -246,6 +253,12 @@ class Converter:
     def maybe_reasoning_message(cls, item: Any) -> ResponseReasoningItemParam | None:
         if isinstance(item, dict) and item.get("type") == "reasoning":
             return cast(ResponseReasoningItemParam, item)
+        return None
+    
+    @classmethod
+    def maybe_extra_content(cls, item: Any) -> ResponseOutputExtraContent | None:
+        if isinstance(item, dict) and item.get("type") == "extra_content":
+            return cast(ResponseOutputExtraContent, item)
         return None
 
     @classmethod
@@ -532,6 +545,7 @@ class Converter:
                         "name": func_call["name"],
                         "arguments": arguments,
                     },
+                    extra_content=func_call["extra_content"]
                 )
                 tool_calls.append(new_tool_call)
                 asst["tool_calls"] = tool_calls
@@ -582,7 +596,14 @@ class Converter:
                     # This preserves the original behavior
                     pending_thinking_blocks = reconstructed_thinking_blocks
 
-            # 8) If we haven't recognized it => fail or ignore
+             # 8) function call output => tool message
+            elif func_output := cls.maybe_extra_content(item):
+                extra_content = {
+                    "extra_content": func_output["extra_content"]
+                }
+                result.append(extra_content)
+
+            # 9) If we haven't recognized it => fail or ignore
             else:
                 raise UserError(f"Unhandled item type or structure: {item}")
 

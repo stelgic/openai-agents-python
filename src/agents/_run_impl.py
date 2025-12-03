@@ -15,6 +15,7 @@ from openai.types.responses import (
     ResponseFunctionToolCall,
     ResponseFunctionWebSearch,
     ResponseOutputMessage,
+    ResponseOutputExtraContent,
 )
 from openai.types.responses.response_code_interpreter_tool_call import (
     ResponseCodeInterpreterToolCall,
@@ -64,6 +65,7 @@ from .items import (
     MCPApprovalResponseItem,
     MCPListToolsItem,
     MessageOutputItem,
+    ExtraContentOutputItem,
     ModelResponse,
     ReasoningItem,
     RunItem,
@@ -550,6 +552,8 @@ class RunImpl:
                 continue
             if isinstance(output, ResponseOutputMessage):
                 items.append(MessageOutputItem(raw_item=output, agent=agent))
+            elif isinstance(output, ResponseOutputExtraContent):
+                items.append(ExtraContentOutputItem(raw_item=output, agent=agent))
             elif isinstance(output, ResponseFileSearchToolCall):
                 items.append(ToolCallItem(raw_item=output, agent=agent))
                 tools_used.append("file_search")
@@ -637,6 +641,9 @@ class RunImpl:
                     "call_id": output.call_id,
                     "operation": parsed_operation,
                 }
+                if hasattr(output, "extra_content") and output.extra_content:
+                    pseudo_call["extra_content"] = output.extra_content
+
                 items.append(ToolCallItem(raw_item=cast(Any, pseudo_call), agent=agent))
                 if apply_patch_tool:
                     tools_used.append(apply_patch_tool.name)
@@ -668,6 +675,7 @@ class RunImpl:
                     "call_id": output.call_id,
                     "operation": parsed_operation,
                 }
+                
                 items.append(ToolCallItem(raw_item=cast(Any, pseudo_call), agent=agent))
                 if apply_patch_tool:
                     tools_used.append(apply_patch_tool.name)
