@@ -18,7 +18,6 @@ from openai.types.responses import (
     ResponseOutputRefusal,
     ResponseOutputText,
     ResponseStreamEvent,
-    ResponseOutputExtraContent,
 )
 from openai.types.responses.response_code_interpreter_tool_call import (
     ResponseCodeInterpreterToolCall,
@@ -152,16 +151,6 @@ class MessageOutputItem(RunItemBase[ResponseOutputMessage]):
     """The raw response output message."""
 
     type: Literal["message_output_item"] = "message_output_item"
-
-
-@dataclass
-class ExtraContentOutputItem(RunItemBase[ResponseOutputExtraContent]):
-    """Represents a message from the LLM."""
-
-    raw_item: ResponseOutputExtraContent
-    """The raw response output message."""
-
-    type: Literal["extra_content_output_item"] = "extra_content_output_item"
 
 
 @dataclass
