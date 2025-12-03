@@ -39,8 +39,6 @@ from openai.types.responses import (
     ResponseOutputText,
     ResponseReasoningItem,
     ResponseReasoningItemParam,
-    ResponseOutputExtraContent,
-    ResponseOutputExtraContentParam,
 )
 from openai.types.responses.response_input_param import FunctionCallOutput, ItemReference, Message
 from openai.types.responses.response_reasoning_item import Content, Summary
@@ -252,12 +250,6 @@ class Converter:
     def maybe_reasoning_message(cls, item: Any) -> ResponseReasoningItemParam | None:
         if isinstance(item, dict) and item.get("type") == "reasoning":
             return cast(ResponseReasoningItemParam, item)
-        return None
-    
-    @classmethod
-    def maybe_extra_content(cls, item: Any) -> ResponseOutputExtraContent | None:
-        if isinstance(item, dict) and item.get("type") == "extra_content":
-            return cast(ResponseOutputExtraContent, item)
         return None
 
     @classmethod

@@ -15,7 +15,6 @@ from openai.types.responses import (
     ResponseFunctionToolCall,
     ResponseFunctionWebSearch,
     ResponseOutputMessage,
-    ResponseOutputExtraContent,
 )
 from openai.types.responses.response_code_interpreter_tool_call import (
     ResponseCodeInterpreterToolCall,
@@ -65,7 +64,6 @@ from .items import (
     MCPApprovalResponseItem,
     MCPListToolsItem,
     MessageOutputItem,
-    ExtraContentOutputItem,
     ModelResponse,
     ReasoningItem,
     RunItem,
@@ -552,8 +550,6 @@ class RunImpl:
                 continue
             if isinstance(output, ResponseOutputMessage):
                 items.append(MessageOutputItem(raw_item=output, agent=agent))
-            elif isinstance(output, ResponseOutputExtraContent):
-                items.append(ExtraContentOutputItem(raw_item=output, agent=agent))
             elif isinstance(output, ResponseFileSearchToolCall):
                 items.append(ToolCallItem(raw_item=output, agent=agent))
                 tools_used.append("file_search")
