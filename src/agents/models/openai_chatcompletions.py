@@ -96,26 +96,29 @@ class OpenAIChatCompletionsModel(Model):
                     finish_reason = first_choice.finish_reason if first_choice else "-"
                     logger.debug(f"LLM resp had no message. finish_reason: {finish_reason}")
 
+            u = getattr(response, "usage", None)
             usage = (
                 Usage(
                     requests=1,
-                    input_tokens=response.usage.prompt_tokens,
-                    output_tokens=response.usage.completion_tokens,
-                    total_tokens=response.usage.total_tokens,
+                    input_tokens=getattr(u, "prompt_tokens", 0) or 0,
+                    output_tokens=getattr(u, "completion_tokens", 0) or 0,
+                    total_tokens=getattr(u, "total_tokens", 0) or 0,
                     input_tokens_details=InputTokensDetails(
                         cached_tokens=getattr(
-                            response.usage.prompt_tokens_details, "cached_tokens", 0
-                        )
-                        or 0,
+                            getattr(u, "prompt_tokens_details", None),
+                            "cached_tokens",
+                            0,
+                        ) or 0
                     ),
                     output_tokens_details=OutputTokensDetails(
                         reasoning_tokens=getattr(
-                            response.usage.completion_tokens_details, "reasoning_tokens", 0
-                        )
-                        or 0,
+                            getattr(u, "completion_tokens_details", None),
+                            "reasoning_tokens",
+                            0,
+                        ) or 0
                     ),
                 )
-                if response.usage
+                if u
                 else Usage()
             )
             if tracing.include_data():
