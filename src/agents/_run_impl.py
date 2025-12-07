@@ -715,7 +715,7 @@ class RunImpl:
                 )
                 run_handoffs.append(handoff)
             # Regular function tool call
-            else:
+            elif output.name.lower() != agent.name.lower():
                 if output.name not in function_map:
                     if output_schema is not None and output.name == "json_tool_call":
                         # LiteLLM could generate non-existent tool calls for structured outputs
