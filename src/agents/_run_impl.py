@@ -730,7 +730,7 @@ class RunImpl:
                             )
                         )
                         continue
-                    else:
+                    elif agent.name.lower() not in output.name.lower():
                         _error_tracing.attach_error_to_current_span(
                             SpanError(
                                 message="Tool not found",
