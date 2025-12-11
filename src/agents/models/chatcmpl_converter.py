@@ -501,6 +501,7 @@ class Converter:
                             }
                         ),
                     },
+                    extra_content={},
                 )
                 tool_calls.append(new_tool_call)
                 asst["tool_calls"] = tool_calls
@@ -536,7 +537,7 @@ class Converter:
                         "name": func_call["name"],
                         "arguments": arguments,
                     },
-                    extra_content=func_call["extra_content"] if "extra_content" in func_call else ""
+                    extra_content=func_call["extra_content"] if "extra_content" in func_call else {}
                 )
                 tool_calls.append(new_tool_call)
                 asst["tool_calls"] = tool_calls
